@@ -61,3 +61,5 @@ app.use("/api/admin/orders", adminOrderRoutes);
 app.listen(PORT, () => {
   console.log(`Server is runing on http://localhost:${PORT}`);
 })
+
+module.exports = app;
