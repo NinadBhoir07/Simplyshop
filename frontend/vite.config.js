@@ -7,7 +7,6 @@ export default defineConfig({
     tailwindcss(),
     react(),
   ],
-  envDir: './', // Explicitly tells Vite to look in the root for .env files
   resolve: {
     dedupe: ['react', 'react-dom'],
   },
