@@ -7,7 +7,7 @@ const FilterSideBar = () => {
     category: "",
     gender: "",
     color: "",
-    size: [],
+    sizes: [],
     material: [],
     brand: [],
     minPrice: 0,
@@ -55,16 +55,17 @@ const FilterSideBar = () => {
 
   useEffect(() => {
     const params = Object.fromEntries([...searchParams]);
+    const currentMax = params.maxPrice ? Number(params.maxPrice) : 100;
 
     setFilters({
       category: params.category || "",
       gender: params.gender || "",
       color: params.color || "",
-      size: params.size ? params.size.split(",") : [],
+      sizes: params.sizes ? params.sizes.split(",") : [],
       material: params.material ? params.material.split(",") : [],
       brand: params.brand ? params.brand.split(",") : [],
       minPrice: params.minPrice || 0,
-      maxPrice: params.maxPrice || 100,
+      maxPrice: currentMax,
     });
     setPriceRange([0, params.maxPrice || 100]);
   }, [searchParams]);
@@ -186,10 +187,10 @@ const FilterSideBar = () => {
           <div className="flex items-center mb-1" key={size}>
             <input
               type="checkbox"
-              name="size"
+              name="sizes"
               value={size}
               onChange={handleFilterChange}
-              checked={filters.size.includes(size)}
+              checked={filters.sizes.includes(size)}
               className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300"
             />
             <span className="text-gray-700">{size}</span>

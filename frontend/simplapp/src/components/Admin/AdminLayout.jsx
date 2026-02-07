@@ -6,9 +6,9 @@ import { Outlet } from "react-router-dom";
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
   return (
     <div className="min-h-screen flex flex-col md:flex-row relative">
       {/* Mobile Toggle Button */}

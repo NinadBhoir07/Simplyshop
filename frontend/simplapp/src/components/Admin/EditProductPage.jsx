@@ -29,16 +29,18 @@ const EditProductPage = () => {
   const [uploading, setUploading] = useState(false); //Image uploading state
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchProductDetails(id));
+    if (!user?.role === "admin") {
+      navigate("/admin");
+      return;
     }
-  }, [dispatch, id]);
+    if (id) dispatch(fetchProductDetails(id));
+  }, [user?.role, id, dispatch, navigate]);
 
   useEffect(() => {
-    if (selectedProduct) {
+    if (selectedProduct && !loading) {
       setProductData(selectedProduct);
     }
-  }, [selectedProduct]);
+  }, [selectedProduct, loading]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

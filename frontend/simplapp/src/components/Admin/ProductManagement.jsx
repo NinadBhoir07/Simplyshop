@@ -10,9 +10,12 @@ const ProductManagement = () => {
   );
 
   useEffect(() => {
+    if (!user?.role === "admin") {
+      navigate("/");
+      return;
+    }
     dispatch(fetchAdminProducts());
-  }, [dispatch]);
-
+  }, [user?.role, dispatch, navigate]);
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete the Product?")) {
       dispatch(deleteProduct(id));

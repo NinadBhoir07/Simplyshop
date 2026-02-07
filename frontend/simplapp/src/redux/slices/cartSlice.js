@@ -68,20 +68,22 @@ export const updateCartItemQuantity = createAsyncThunk("cart/updateCartItemQuant
 });
 
 // Remove an item from the cart
-export const removeFromCart = createAsyncThunk("cart/removeFromCart", async ({ productId, guestId, userId, size, color }, { rejectWithValue }) => {
-  try {
-    const response = await axios.delete(
-      {
-        method: "DELETE",
-        url: `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
-        data: { productId, guestId, userId, size, color }
-      }
-    );
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const removeFromCart = createAsyncThunk(
+  "cart/removeFromCart",
+  async ({ productId, guestId, userId, size, color }, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart`, // The URL
+        {
+          data: { productId, guestId, userId, size, color }, // The Body
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
-});
+);
 
 // Merge guest cart into user cart
 export const mergeCart = createAsyncThunk("cart/mergeCart", async ({ guestId, user }, { rejectWithValue }) => {

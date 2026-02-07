@@ -14,12 +14,13 @@ const OrderManagement = () => {
   const { orders, loading, error } = useSelector((state) => state.adminOrders);
 
   useEffect(() => {
-    if (!user || user.role !== "admin") {
+    if (!user) return;
+    if (user.role !== "admin") {
       navigate("/");
-    } else {
-      dispatch(fetchAllOrders());
+      return;
     }
-  }, [dispatch, user, navigate]);
+    dispatch(fetchAllOrders());
+  }, [user?.role, dispatch, navigate]);
 
   const handleStatusChange = (orderId, status) => {
     dispatch(updateOrderStatus({ id: orderId, status }));

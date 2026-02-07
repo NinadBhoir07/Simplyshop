@@ -119,7 +119,7 @@ router.get("/", async (req, res) => {
     }
 
     if (sizes) {
-      query.size = { $in: sizes.split(",") }
+      query.sizes = { $in: sizes.split(",") }
     }
 
     if (color) {
@@ -156,7 +156,7 @@ router.get("/", async (req, res) => {
         case "popularity":
           sort = { rating: -1 };
           break;
-          deafult:
+        default:
           break;
       }
     }

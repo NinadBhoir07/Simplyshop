@@ -16,16 +16,16 @@ const UserManagement = () => {
   const { users, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
-    if (user && user.role !== "admin") {
-      navigate("/");
-    }
-  }, [user, navigate]);
+    if (!user) return;
 
-  useEffect(() => {
-    if (user && user.role === "admin") {
-      dispatch(fetchUsers());
+    if (user.role !== "admin") {
+      navigate("/");
+      return;
     }
-  }, [dispatch, user]);
+
+    // Only admins reach here
+    dispatch(fetchUsers());
+  }, [user?.role, dispatch, navigate]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -54,7 +54,7 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = (userId, newRole) => {
-    dispatch(updateUser({ id, userId, role: newRole }));
+    dispatch(updateUser({ id: userId, role: newRole }, [dispatch]));
   };
 
   const handleDeleteUser = (userId) => {

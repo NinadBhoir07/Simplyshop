@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,15 +24,16 @@ const Checkout = () => {
 
   // Ensure cart is loaded before proceeding
   useEffect(() => {
-    if (!cart || !cart.products || cart.products.length === 0) {
-      navigate("/");
+    if (!cart?.products?.length) {
+      navigate("/cart");
+      return;
     }
-  }, [cart, navigate]);
+  }, [cart?.products?.length, navigate]);
 
-  const handleCreateCheckout = async (e) => {
-    e.preventDefault();
-    if (cart && cart.products.length > 0) {
-      const res = await dispatch(
+  const handleCreateCheckout = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const result = await dispatch(
         createCheckout({
           checkoutItems: cart.products,
           shippingAddress,
@@ -40,46 +41,49 @@ const Checkout = () => {
           totalPrice: cart.totalPrice,
         }),
       );
-      if (res.payload && res.payload._id) {
-        setCheckoutId(res.payload._id); //Set checkout ID if checkout was successful
+
+      if (result.payload?._id) {
+        setCheckoutId(result.payload._id);
       }
-    }
-  };
+    },
+    [dispatch, cart?.products, shippingAddress, cart?.totalPrice],
+  );
 
-  const handlePaymentSuccess = async (details) => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
-        { paymentStatus: "paid", paymentDetails: details },
-        {
-          headers: {
-            Authorization: `Beare ${localStorage.getItem("userToken")}`,
+  const handlePaymentSuccess = useCallback(
+    async (details) => {
+      if (!checkoutId) return;
+
+      try {
+        await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
+          { paymentStatus: "paid", paymentDetails: details },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
           },
-        },
-      );
-
-      await handleFinalizeCheckout(checkoutId); //finalize checkout if payment is successful
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleFinalizeCheckout = async (checkoutId) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${checkoutId}/finalize`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        );
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
           },
-        },
-      );
-      navigate("/order-confirmation");
-    } catch (error) {
-      console.error(error);
-    }
-  };
+        );
+        navigate("/order-confirmation");
+      } catch (error) {
+        console.error("Payment failed:", error);
+      }
+    },
+    [checkoutId, navigate],
+  );
+
+  const handlePaymentError = useCallback((err) => {
+    console.error("PayPal error:", err);
+  }, []);
+
   if (loading) return <p>Loading Cart...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!cart || !cart.products || cart.products.length === 0) {
@@ -232,7 +236,7 @@ const Checkout = () => {
                 <PayPalButton
                   amount={cart.totalPrice}
                   onSuccess={handlePaymentSuccess}
-                  onError={(err) => alert("Payment failed. Try again")}
+                  onError={handlePaymentError}
                 />
               </div>
             )}
