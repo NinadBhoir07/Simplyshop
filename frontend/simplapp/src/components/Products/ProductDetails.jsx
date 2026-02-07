@@ -126,7 +126,7 @@ const ProductDetails = ({ productId }) => {
               <img
                 src={mainImage}
                 alt={selectedProduct.name}
-                className="w-full h-96 object-cover rounded-2xl shadow-md"
+                className="w-full h-150 object-cover rounded-2xl shadow-md"
                 loading="lazy"
               />
             ) : (
@@ -136,13 +136,13 @@ const ProductDetails = ({ productId }) => {
             )}
 
             {/* Thumbnails */}
-            <div className="flex gap-3 mt-6 overflow-x-auto pb-2">
+            <div className="flex gap-3 pl-4 mt-10 overflow-x-auto ">
               {selectedProduct.images?.map((image, index) => (
                 <img
                   key={image.url || index}
                   src={image.url}
                   alt={image.altText || `Thumbnail ${index}`}
-                  className={`w-20 h-20 object-cover rounded-xl cursor-pointer flex-shrink-0 transition-all ${
+                  className={`w-20 h-30 object-cover rounded-xl cursor-pointer flex-shrink-0 transition-all ${
                     mainImage === image.url
                       ? "ring-4 ring-blue-500 shadow-lg"
                       : "hover:ring-2 hover:ring-gray-300"
